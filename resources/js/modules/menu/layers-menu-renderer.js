@@ -139,7 +139,7 @@ export function renderLayersMenuFromWms(
                             (legendItems) => {
                                 layersLegends[layerName] = legendItems;
                             },
-                            (err) => console.error(err)
+                            (err) => console.error(layerName + '   ' + err)
                         );
 
 

@@ -10,7 +10,7 @@ import { enableMouseCoordinates } from './modules/map/mouse-coordinates';
 import { loadLayers } from './modules/map/layers';
 import { loadWmsLayersFromConfig } from "./modules/map/wms-capabilities-loader";
 import { renderLayersMenuFromWms } from "./modules/menu/layers-menu-renderer";
-import { bindWmsCheckboxToggles } from "./modules/menu/layers-checkbox-handler";
+import { bindCheckboxToggles } from "./modules/menu/layers-checkbox-handler";
 import { addMapCopyright } from "././modules/menu/copyright-tooltip";
 import { initAddressSearchWfs } from "./modules/map/toponimic-search";
 import { createSingleClickDispatcher } from "./modules/map/map-singleclick-dispatcher";
@@ -22,7 +22,7 @@ import { renderGfiRightPanel } from "./modules/panels/gfi-panel";
 import { initHighlight, onGeomHover, onGeomOut, zoomToGeometryFromGeoJson } from "./modules/handlers/highlight-element.js";
 import { adaptHybridResultsToPanel, hasAnyPanelContent } from "./modules/panels/gfi-results-adapter";
 
-import { addWmsLayerToMap, removeWmsLayerFromMap, refreshWmsLayer } from "./modules/map/wms-layers-on-off";
+import { refreshLayer } from "./modules/map/layers-on-off";
 import {applyProxyIfNeeded} from "./modules/map/wms-capabilities-loader";
 import {initLayerFiltersManager} from "./modules/filters/layers-filter-manager"
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     registerGisBottomMenuTools(mapa.map, {useProxy:USE_PROXY});
     registerGisLeftMenu(mapa.map);
     enableMouseCoordinates(mapa.map, '#mouse-coordinates');
-    bindWmsCheckboxToggles(mapa.map, {selector: ".layerCheckbox", removeOnUncheck: true});
+    bindCheckboxToggles(mapa.map, {selector: ".layerCheckbox", removeOnUncheck: true});
 
     initHighlight(mapa.map, {
         dataProjection: MAP_CRS,
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         useProxy: USE_PROXY,
         proxyPath: PROXY_PATH,
         getCqlFilter: ({ layer }) => {
-            return window.currentCqlFilterByLayer?.[layer.get("wmsLayerName")] || null;
+            return window.currentCqlFilterByLayer?.[layer.get("layerName")] || null;
         },
         geomPropName: GEOM_PROP,
         srid: SRID,
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showGfiLoading,
             spatialDrawTool,
             getCqlFilter: ({ layer }) => {
-                return window.currentCqlFilterByLayer?.[layer.get("wmsLayerName")] || null;
+                return window.currentCqlFilterByLayer?.[layer.get("layerName")] || null;
             },
 
             // WMS
@@ -172,7 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // });
 
     initLayerFiltersManager({
-        refreshWmsLayer,
+        map,
+        refreshLayer,
         getWfsDescribeUrl
     });
 

@@ -22,7 +22,7 @@ import { get as getProjection } from "ol/proj";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
 
 // Use your registry (rename as you wish)
-import { layerRegistry } from "./map-config";
+import { layerRegistry, layersInfo } from "./map-config";
 
 const DEFAULT_CRS = "EPSG:25830";
 
@@ -69,7 +69,6 @@ export function createOlLayerFromServiceType({
   serviceBaseUrl,
   version,
   title = null,
-  crossOrigin = "anonymous",
   serviceType,
   options = {},
 }) {
@@ -91,7 +90,6 @@ export function createOlLayerFromServiceType({
   if (type === "WMS") {
     const source = new TileWMS({
       url: serviceBaseUrl,
-      //crossOrigin,
       params: {
         SERVICE: "WMS",
         VERSION: version || "1.3.0",
@@ -256,9 +254,10 @@ export function createOlLayerFromServiceType({
  * @returns {import("ol/layer/Base").default}
  */
 export function addLayerToMap(
-  map,
-  { layerName, serviceBaseUrl, version, title = null, crossOrigin = "anonymous", serviceType, options = {} }
+  map, layerName, { options = {} }
 ) {
+
+  const { serviceBaseUrl, version, title, serviceType } = layersInfo.get(layerName);
   if (!map) throw new Error("Map is required");
   if (!layerName || !serviceBaseUrl) throw new Error("layerName and serviceBaseUrl are required");
 
@@ -275,7 +274,6 @@ export function addLayerToMap(
     serviceBaseUrl,
     version,
     title,
-    crossOrigin,
     serviceType,
     options,
   });
@@ -293,10 +291,10 @@ export function addLayerToMap(
  * @param {boolean} [opts.remove=true] true -> remove from map and registry; false -> setVisible(false)
  */
 export function removeLayerFromMap(
-  map,
-  { layerName, serviceBaseUrl, serviceType, remove = true }
+  map, layerName, removeOnUncheck
 ) {
   if (!map) throw new Error("Map is required");
+  const { serviceBaseUrl, serviceType } = layersInfo.get(layerName);
   if (!layerName || !serviceBaseUrl) throw new Error("layerName and serviceBaseUrl are required");
 
   const key = buildLayerKey({ type: serviceType, layerName, serviceBaseUrl });
@@ -304,9 +302,10 @@ export function removeLayerFromMap(
 
   if (!olLayer) return;
 
-  if (remove) {
+  if (removeOnUncheck) {
     map.removeLayer(olLayer);
     layerRegistry.delete(key);
+    layersInfo.delete(layerName);
   } else {
     olLayer.setVisible(false);
   }
@@ -324,11 +323,10 @@ export function removeLayerFromMap(
  * @param {string}  [opts.cacheParam="_t"]
  * @returns {boolean}
  */
-export function refreshLayer(
-  map,
-  { layerName, serviceBaseUrl, serviceType, bustCache = true, cacheParam = "_t" }
-) {
+export function refreshLayer(map, layerName, { bustCache = true, cacheParam = "_t" }) {
   if (!map) throw new Error("Map is required");
+
+  const { serviceBaseUrl, serviceType} = layersInfo.get(layerName);
   if (!layerName || !serviceBaseUrl) throw new Error("layerName and serviceBaseUrl are required");
 
   const type = normalizeType(serviceType);
