@@ -8,7 +8,7 @@ import { initOpenLayersMap } from './modules/map/openlayers-map';
 import { registerGisBottomMenuTools, registerGisLeftMenu } from './modules/menu/gis-menus.js';
 import { enableMouseCoordinates } from './modules/map/mouse-coordinates';
 import { loadLayers } from './modules/map/layers';
-import { loadLayersFromConfig } from "./modules/map/wms-capabilities-loader";
+import { loadWmsLayersFromConfig } from "./modules/map/wms-capabilities-loader";
 import { renderLayersMenuFromWms } from "./modules/menu/layers-menu-renderer";
 import { bindCheckboxToggles } from "./modules/menu/layers-checkbox-handler";
 import { addMapCopyright } from "././modules/menu/copyright-tooltip";
@@ -63,7 +63,7 @@ $(function () {
         //const useProxy = import.meta.env.VITE_APP_ENV === "local";
 
         const { servicesLayers, groupsLayers } =
-            await loadLayersFromConfig(
+            await loadWmsLayersFromConfig(
                 {
                     groups: bootstrap.groups,
                     services: bootstrap.services,

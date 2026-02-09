@@ -16,10 +16,11 @@ class LayersService
         $services = DB::table('public.gis_service')
             ->where('enabled', true)
             ->orderBy('id')
-            ->get(['id', 'name', 'type', 'base_url', 'version', 'options'])
+            ->get(['id', 'group_id', 'name', 'type', 'base_url', 'version', 'options'])
             ->map(function ($s) {
                 return [
                     'id' => (int)$s->id,
+                    'group_id' => (int)$s->group_id,
                     'name' => $s->name,
                     'type' => $s->type,
                     'base_url' => $s->base_url,
@@ -35,7 +36,7 @@ class LayersService
             ->where('enabled', true)
             ->orderBy('order_idx')
             ->orderBy('id')
-            ->get(['id', 'key', 'title', 'order_idx', 'parent_id', 'collapsed_default', 'service_id', 'icon'])
+            ->get(['id', 'key', 'title', 'order_idx', 'parent_id', 'collapsed_default', 'icon'])
             ->map(function ($g) {
                 return [
                     'id' => (int)$g->id,
@@ -44,7 +45,6 @@ class LayersService
                     'order_idx' => (int)$g->order_idx,
                     'parent_id' => $g->parent_id ? (int)$g->parent_id : null,
                     'collapsed_default' => (bool)$g->collapsed_default,
-                    'service_id' => $g->service_id ? (int)$g->service_id : null,
                     'icon' => $g->icon,
                 ];
             })
