@@ -133,11 +133,11 @@ export async function loadWmsCapabilitiesForService(
 // }
 
 export async function loadLayersFromConfig(
-    config,
-    { useProxy = false, proxyPath = "/proxy/geoserver?url=" } = {}
+    config, { useProxy = false, proxyPath = "/proxy/geoserver?url=" } = {}
 ) {
     const services = config.services || [];
     const groups = config.groups || [];
+    const originLayers = config.layers || [];
 
     // Build map: group_id -> [group]
     // NOTE: If you keep group ids unique (recommended), this is essentially a direct lookup.
@@ -148,6 +148,7 @@ export async function loadLayersFromConfig(
 
     const servicesLayers = {}; // key: service.id -> layers[]
     const groupsLayers = {};   // key: group.key -> layers[]
+    const customLayers = {};
 
     // Init empty arrays for every group key
     groups.forEach((g) => {
@@ -181,6 +182,19 @@ export async function loadLayersFromConfig(
         }
     }
 
-    return { servicesLayers, groupsLayers };
+    for (const lay of originLayers) {
+
+        const group = groupById[lay.group_id];
+        if (!group) {
+            // If you prefer to keep it silent, remove the warning
+            console.warn("Layer without valid group_id:", lay);
+            originLayers[lay.id] = [];
+            continue;
+        }
+        customLayers[lay.id] = lay;
+        groupsLayers[group.key] = groupsLayers[group.key].concat(lay);
+    }
+
+    return { servicesLayers, groupsLayers, customLayers };
 }
 

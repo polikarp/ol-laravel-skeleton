@@ -25,8 +25,10 @@ function readDataFromCheckbox(checkboxEl) {
     const version = String($cb.data("service-version") || "1.3.0").trim();
     const title = String($cb.data("layer-title") || layerName).trim();
     const serviceType = String($cb.data("service-type") || "").trim();
+    let options = "";
 
-    return { layerName, serviceBaseUrl, version, title, serviceType };
+
+    return { layerName, serviceBaseUrl, version, title, serviceType, options };
 }
 
 /**
@@ -39,9 +41,7 @@ function readDataFromCheckbox(checkboxEl) {
  * @param {boolean} opts.removeOnUncheck
  * @param {string} opts.crossOrigin
  */
-export function bindCheckboxToggles(
-    map,
-    { selector = ".layerCheckbox", removeOnUncheck = true, crossOrigin = "anonymous" } = {}
+export function bindCheckboxToggles(map, { selector = ".layerCheckbox", removeOnUncheck = true, crossOrigin = "anonymous" } = {}
 ) {
     if (!map) throw new Error("Map is required");
 

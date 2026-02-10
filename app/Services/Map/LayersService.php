@@ -51,9 +51,37 @@ class LayersService
             ->values()
             ->all();
 
+        $layers = DB::table('public.gis_layer')
+            ->where('enabled', true)
+            ->orderBy('group_id')
+            ->orderBy('z_index')
+            ->orderBy('id')
+            ->get(['id', 'group_id', 'title', 'layer_name', 'base_url', 'layer_type', 'geom_field', 'visible_default', 'z_index', 'queryable', 'options',])
+            ->map(function ($l) {
+                return [
+                    'id' => (int) $l->id,
+                    'group_id' => (int) $l->group_id,
+                    'title' => $l->title,
+                    'layer_name' => $l->layer_name,
+                    'base_url' => $l->base_url,
+                    'type' => $l->layer_type,
+                    'geom_field' => $l->geom_field,
+                    'visible_default' => (bool) $l->visible_default,
+                    'z_index' => (int) $l->z_index,
+                    'queryable' => (bool) $l->queryable,
+                    'options' => is_string($l->options)
+                        ? json_decode($l->options, true)
+                        : (array) $l->options,
+                ];
+            })
+            ->values()
+            ->all();
+
+
         return [
             'groups' => $groups,
             'services' => $services,
+            'layers' => $layers,
         ];
     }
 

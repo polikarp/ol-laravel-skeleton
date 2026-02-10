@@ -64,51 +64,44 @@ function buildLayerKey({ type, layerName, serviceBaseUrl }) {
  *
  * @returns {import("ol/layer/Base").default}
  */
-export function createOlLayerFromServiceType({
-  layerName,
-  serviceBaseUrl,
-  version,
-  title = null,
-  serviceType,
-  options = {},
-}) {
-  if (!layerName) throw new Error("layerName is required");
-  if (!serviceBaseUrl) throw new Error("serviceBaseUrl is required");
-  if (!serviceType) throw new Error("serviceType is required");
+export function createOlLayerFromServiceType({layerName, serviceBaseUrl, version, title = null, serviceType, options = {},}) {
+    if (!layerName) throw new Error("layerName is required");
+    if (!serviceBaseUrl) throw new Error("serviceBaseUrl is required");
+    if (!serviceType) throw new Error("serviceType is required");
 
-  const type = normalizeType(serviceType);
+    const type = normalizeType(serviceType);
 
-  // Store some metadata on the layer for later refresh/remove logic
-  const commonMeta = {
-    serviceType: type,
-    serviceBaseUrl,
-    serviceVersion: version || null,
-    layerName,
-    title: title || layerName,
-  };
+    // Store some metadata on the layer for later refresh/remove logic
+    const commonMeta = {
+        serviceType: type,
+        serviceBaseUrl,
+        serviceVersion: version || null,
+        layerName,
+        title: title || layerName,
+    };
 
-  if (type === "WMS") {
-    const source = new TileWMS({
-      url: serviceBaseUrl,
-      params: {
-        SERVICE: "WMS",
-        VERSION: version || "1.3.0",
-        REQUEST: "GetMap",
-        LAYERS: layerName,
-        TILED: true,
-        TRANSPARENT: true,
-        FORMAT: options.format || "image/png",
-      },
-    });
+    if (type === "WMS") {
+        const source = new TileWMS({
+            url: serviceBaseUrl,
+            params: {
+                SERVICE: "WMS",
+                VERSION: version || "1.3.0",
+                REQUEST: "GetMap",
+                LAYERS: layerName,
+                TILED: true,
+                TRANSPARENT: true,
+                FORMAT: options.format || "image/png",
+            },
+        });
 
-    const layer = new TileLayer({ source, visible: true });
-    Object.entries(commonMeta).forEach(([k, v]) => layer.set(k, v));
+        const layer = new TileLayer({ source, visible: true });
+        Object.entries(commonMeta).forEach(([k, v]) => layer.set(k, v));
 
-    // Extra metadata (optional)
-    layer.set("wfsEnabled", options.wfsEnabled ?? true);
-    layer.set("wfsVersion", options.wfsVersion || "2.0.0");
+        // Extra metadata (optional)
+        layer.set("wfsEnabled", options.wfsEnabled ?? true);
+        layer.set("wfsVersion", options.wfsVersion || "2.0.0");
 
-    return layer;
+        return layer;
   }
 
   if (type === "WFS") {
@@ -253,34 +246,25 @@ export function createOlLayerFromServiceType({
  *
  * @returns {import("ol/layer/Base").default}
  */
-export function addLayerToMap(
-  map, layerName, { options = {} }
-) {
+export function addLayerToMap(map, layerName, { options = {} }) {
 
-  const { serviceBaseUrl, version, title, serviceType } = layersInfo.get(layerName);
-  if (!map) throw new Error("Map is required");
-  if (!layerName || !serviceBaseUrl) throw new Error("layerName and serviceBaseUrl are required");
+    const { serviceBaseUrl, version, title, serviceType } = layersInfo.get(layerName);
+    if (!map) throw new Error("Map is required");
+    if (!layerName || !serviceBaseUrl) throw new Error("layerName and serviceBaseUrl are required");
 
-  const key = buildLayerKey({ type: serviceType, layerName, serviceBaseUrl });
+    const key = buildLayerKey({ type: serviceType, layerName, serviceBaseUrl });
 
-  if (layerRegistry.has(key)) {
-    const existing = layerRegistry.get(key);
-    existing.setVisible(true);
-    return existing;
-  }
+    if (layerRegistry.has(key)) {
+        const existing = layerRegistry.get(key);
+        existing.setVisible(true);
+        return existing;
+    }
 
-  const olLayer = createOlLayerFromServiceType({
-    layerName,
-    serviceBaseUrl,
-    version,
-    title,
-    serviceType,
-    options,
-  });
+    const olLayer = createOlLayerFromServiceType({layerName, serviceBaseUrl, version, title, serviceType, options,});
 
-  map.addLayer(olLayer);
-  layerRegistry.set(key, olLayer);
-  return olLayer;
+    map.addLayer(olLayer);
+    layerRegistry.set(key, olLayer);
+    return olLayer;
 }
 
 /**
