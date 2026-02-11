@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container m-0 p-0">
-    <div id="map" data-config='@json($mapConfig)' style="width:100%; height: calc(100vh - 104px);"></div>
+    <div id="map"  data-baseLayers='@json($baseLayers)' style="width:100%; height: calc(100vh - 104px);"></div>
 
 
     <!-- Left layers menu -->

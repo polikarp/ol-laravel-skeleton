@@ -59,6 +59,7 @@ $(function () {
 
         console.log("Groups:", bootstrap.groups);
         console.log("Services:", bootstrap.services);
+        console.log("Layers:", Array.from(bootstrap.layers.values()));
 
         //const useProxy = import.meta.env.VITE_APP_ENV === "local";
 
@@ -110,7 +111,7 @@ let map, queryService, spatialDrawTool;
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    const mapa = initOpenLayersMap('map', $("#map").data('config'));
+    const mapa = initOpenLayersMap('map', $("#map").data("baselayers"));
     map = mapa.map;
     //const useProxy = import.meta.env.VITE_APP_ENV === 'local';
     registerGisBottomMenuTools(mapa.map, {useProxy:USE_PROXY});

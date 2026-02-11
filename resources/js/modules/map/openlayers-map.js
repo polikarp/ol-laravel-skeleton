@@ -28,7 +28,7 @@ import {initialCenter, initialZoom, initialRotation} from './map-config';
  * @param {string} targetId - DOM element id where the map will be rendered.
  * @returns {{ map: Map, layers: any, searchLayer: VectorLayer, searchSource: VectorSource }|null}
  */
-export function initOpenLayersMap(targetId = 'map', mapConfig) {
+export function initOpenLayersMap(targetId = 'map', baseLayers) {
 
     const target = document.getElementById(targetId);
     if (!target) {
@@ -61,88 +61,90 @@ export function initOpenLayersMap(targetId = 'map', mapConfig) {
         0.0654767192471813,
     ];
 
-    const geoserverWMS = mapConfig.geoserver.wms_url;
+    // const geoserverWMS = mapConfig.geoserver.wms_url;
 
 
-    // GeoServer basemaps (WMS)
-    const baseMapGib = new TileLayer({
-        source: new TileWMS({
-            url: geoserverWMS,
-            params: {
-                LAYERS: 'gibgis:basemap_basic_1',
-                FORMAT: 'image/jpeg',
-                TRANSPARENT: true,
-            },
-            serverType: 'geoserver',
-        }),
-        visible: true,
-        name:'gibgis:basemap_basic_1',
-        isBaseLayer: true
-    });
+    // // GeoServer basemaps (WMS)
+    // const baseMapGib = new TileLayer({
+    //     source: new TileWMS({
+    //         url: geoserverWMS,
+    //         params: {
+    //             LAYERS: 'gibgis:basemap_basic_1',
+    //             FORMAT: 'image/jpeg',
+    //             TRANSPARENT: true,
+    //         },
+    //         serverType: 'geoserver',
+    //     }),
+    //     visible: true,
+    //     name:'gibgis:basemap_basic_1',
+    //     isBaseLayer: true
+    // });
 
-    const baseMapGibAerial2013 = new TileLayer({
-        source: new TileWMS({
-            url: geoserverWMS,
-            params: {
-                LAYERS: 'gibgis:aerial2013_v3',
-                FORMAT: 'image/jpeg',
-            },
-            serverType: 'geoserver',
-        }),
-        visible: false,
-        name:'gibgis:aerial2013_v3',
-        isBaseLayer: true
-    });
+    // const baseMapGibAerial2013 = new TileLayer({
+    //     source: new TileWMS({
+    //         url: geoserverWMS,
+    //         params: {
+    //             LAYERS: 'gibgis:aerial2013_v3',
+    //             FORMAT: 'image/jpeg',
+    //         },
+    //         serverType: 'geoserver',
+    //     }),
+    //     visible: false,
+    //     name:'gibgis:aerial2013_v3',
+    //     isBaseLayer: true
+    // });
 
-    const baseMapGibAerial2003 = new TileLayer({
-        source: new TileWMS({
-            url: geoserverWMS,
-            params: {
-                LAYERS: 'gibgis:aerial2003',
-                FORMAT: 'image/jpeg',
-                TRANSPARENT: true,
-            },
-            serverType: 'geoserver',
-        }),
-        visible: false,
-        name:'gibgis:aerial2003',
-        isBaseLayer: true
-    });
+    // const baseMapGibAerial2003 = new TileLayer({
+    //     source: new TileWMS({
+    //         url: geoserverWMS,
+    //         params: {
+    //             LAYERS: 'gibgis:aerial2003',
+    //             FORMAT: 'image/jpeg',
+    //             TRANSPARENT: true,
+    //         },
+    //         serverType: 'geoserver',
+    //     }),
+    //     visible: false,
+    //     name:'gibgis:aerial2003',
+    //     isBaseLayer: true
+    // });
 
-    const baseMapGibHybrid2013 = new TileLayer({
-        source: new TileWMS({
-            url: geoserverWMS,
-            params: {
-                LAYERS: 'gibgis:basemap_hybrid_2013_v3',
-                FORMAT: 'image/jpeg',
-                TRANSPARENT: true,
-            },
-            serverType: 'geoserver',
-        }),
-        visible: false,
-        name:'gibgis:basemap_hybrid_2013_v3',
-        isBaseLayer: true
-    });
+    // const baseMapGibHybrid2013 = new TileLayer({
+    //     source: new TileWMS({
+    //         url: geoserverWMS,
+    //         params: {
+    //             LAYERS: 'gibgis:basemap_hybrid_2013_v3',
+    //             FORMAT: 'image/jpeg',
+    //             TRANSPARENT: true,
+    //         },
+    //         serverType: 'geoserver',
+    //     }),
+    //     visible: false,
+    //     name:'gibgis:basemap_hybrid_2013_v3',
+    //     isBaseLayer: true
+    // });
 
-    // Optional extra basemaps (not EPSG:25830-native). Keep them disabled or use only if you know what you're doing.
-    const osmLayer = new TileLayer({
-        source: new OSM(),
-        visible: false,
-        name:'OSM_Base_Layer',
-        isBaseLayer: true
-    });
+    // // Optional extra basemaps (not EPSG:25830-native). Keep them disabled or use only if you know what you're doing.
+    // const osmLayer = new TileLayer({
+    //     source: new OSM(),
+    //     visible: false,
+    //     name:'OSM_Base_Layer',
+    //     isBaseLayer: true
+    // });
 
-    const grayOSMLayer = new TileLayer({
-        source: new XYZ({
-            url: 'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-            attributions:
-                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
-                '&copy; <a href="https://carto.com/">CARTO</a>',
-        }),
-        visible: false,
-        name:'OSM_Base_Gray_Layer',
-        isBaseLayer: true
-    });
+    // const grayOSMLayer = new TileLayer({
+    //     source: new XYZ({
+    //         url: 'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    //         attributions:
+    //             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
+    //             '&copy; <a href="https://carto.com/">CARTO</a>',
+    //     }),
+    //     visible: false,
+    //     name:'OSM_Base_Gray_Layer',
+    //     isBaseLayer: true
+    // });
+
+    const baseLayersOl = buildBaseLayers(baseLayers);
 
 
     // Create map
@@ -151,14 +153,15 @@ export function initOpenLayersMap(targetId = 'map', mapConfig) {
             zoom: false,
         }),
         target: targetId,
-        layers: [
-            baseMapGib,
-            baseMapGibAerial2013,
-            baseMapGibAerial2003,
-            baseMapGibHybrid2013,
-            osmLayer,
-            grayOSMLayer,
-        ],
+        layers: baseLayersOl,
+        // layers: [
+        //     baseMapGib,
+        //     baseMapGibAerial2013,
+        //     baseMapGibAerial2003,
+        //     baseMapGibHybrid2013,
+        //     osmLayer,
+        //     grayOSMLayer,
+        // ],
         view: new View({
             projection: 'EPSG:25830',
             resolutions: resolutions,
@@ -190,15 +193,60 @@ export function initOpenLayersMap(targetId = 'map', mapConfig) {
 
     return {
         map,
-        layers: {
-            baseMapGib,
-            baseMapGibAerial2013,
-            baseMapGibAerial2003,
-            baseMapGibHybrid2013,
-            osmLayer,
-            grayOSMLayer,
-        },
+        // layers: {
+        //     baseMapGib,
+        //     baseMapGibAerial2013,
+        //     baseMapGibAerial2003,
+        //     baseMapGibHybrid2013,
+        //     osmLayer,
+        //     grayOSMLayer,
+        // },
+        layers: baseLayersOl,
         searchLayer,
         searchSource,
     };
+}
+
+
+function buildBaseLayers(baseLayersJson) {
+    return (baseLayersJson || []).map(r => {
+        const opts = r.options ? JSON.parse(r.options) : {};
+
+        if (r.layer_type === "wms") {
+            return new TileLayer({
+                source: new TileWMS({
+                    url: r.base_url,
+                    params: {
+                        LAYERS: r.layer_name,
+                        FORMAT: opts.format || "image/png",
+                        TRANSPARENT: opts.transparent ?? true,
+                    },
+                    serverType: "geoserver",
+                }),
+                visible: !!r.visible_default,
+                name: r.layer_name,
+                isBaseLayer: true
+            });
+        }
+
+        if (r.layer_type === "osm") {
+            return new TileLayer({
+                source: new OSM(),
+                visible: !!r.visible_default,
+                name: r.layer_name,
+                isBaseLayer: true
+            });
+        }
+
+        if (r.layer_type === "xyz") {
+            return new TileLayer({
+                source: new XYZ({
+                    url: r.base_url
+                }),
+                visible: !!r.visible_default,
+                name: r.layer_name,
+                isBaseLayer: true
+            });
+        }
+    });
 }

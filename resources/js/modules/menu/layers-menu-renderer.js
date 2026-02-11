@@ -1,5 +1,6 @@
 import {applyProxyIfNeeded} from '../map/wms-capabilities-loader';
 import {extractLegendItems} from '../map/get-legend-json';
+import { layersInfo } from "../map/map-config";
 
 /**
  * Build HTML for the layers menu from groups + parsed WMS layers.
@@ -99,21 +100,18 @@ export function renderLayersMenuFromWms(
         } else {
             layers.forEach((layer) => {
                 const layerName = layer.name || layer.layer_name;
-                const layerTitle = layer.title || layer.name;
-                const layerDesc = layer.desc || layer.title ||  "";
+                const title = layer.title || layer.name;
+                const desc = layer.desc || layer.description ||  "";
                 const serviceBaseUrl = layer.serviceBaseUrl || layer.base_url;
                 const version = layer.serviceVersion || layer.options.version || "1.3.0";
                 const format = layer.options?.format ?? "image/png";
-                let options = "";
-                try {
-                    options = JSON.stringify(layer?.options ?? {});
-                } catch (e) {
-                    options = "";
-                }
-
+                const tiled = layer.options?.tiled ?? true;
                 if (!serviceType.length) {
                     serviceType = layer.type;
                 }
+                //Store all layers info in this Map
+                layersInfo.set(layerName, { layerName, title, desc, serviceBaseUrl, version, serviceType, format, tiled });
+
                 const safeId = `wms_${groupKey}_${layerName}`.replace(/[^a-zA-Z0-9_-]/g, "_");
                 const inputId = `${safeId}_switch`;
 
@@ -174,15 +172,7 @@ export function renderLayersMenuFromWms(
                 const checkedAttr = "";
 
                 const layerRowHtml = `
-                    <li class="d-flex flex-column mb-1"
-                        data-layer="${escapeAttr(layerName)}"
-                        data-layer-title="${escapeAttr(layerTitle)}"
-                        data-layer-desc="${escapeAttr(layerDesc)}"
-                        data-group-key="${escapeAttr(groupKey)}"
-                        data-service-id="${escapeAttr(layer.serviceId)}"
-                        data-service-base-url="${escapeAttr(serviceBaseUrl)}"
-                        data-service-version="${escapeAttr(version)}">
-
+                    <li class="d-flex flex-column mb-1" data-layer="${escapeAttr(layerName)}">
                         <div class="d-flex align-items-center">
                             <input id="${inputId}"
                                    type="checkbox"
@@ -190,27 +180,17 @@ export function renderLayersMenuFromWms(
                                    class="me-2 layerCheckbox"
                                    title="Add layer"
                                    ${checkedAttr}
-                                   data-layer="${escapeAttr(layerName)}"
-                                   data-layer-title="${escapeAttr(layerTitle)}"
-                                   data-group-key="${escapeAttr(groupKey)}"
-                                   data-service-id="${escapeAttr(layer.serviceId)}"
-                                   data-service-base-url="${escapeAttr(serviceBaseUrl)}"
-                                   data-service-version="${escapeAttr(version)}"
-                                   data-service-type="${serviceType}"
-                                   data-options="${escapeAttr(options)}">
+                                   data-layer="${escapeAttr(layerName)}">
 
-                            <label for="${inputId}" class="mb-0 flex-grow-1"
-                                   title="${escapeAttr(layerDesc)}">
-                                ${escapeHtml(layerTitle)}
+                            <label for="${inputId}" class="mb-0 flex-grow-1" title="${escapeAttr(desc)}">
+                                ${escapeHtml(title)}
                             </label>
 
                             &nbsp;&nbsp;
 
                             <i class="fa-solid fa-filter icon-button d-none layerFilterBtn"
-                               data-layer="${escapeAttr(layerName)}"
-                               data-group-key="${escapeAttr(groupKey)}"
-                               data-service-id="${escapeAttr(layer.serviceId)}"
-                               data-service-base-url="${escapeAttr(serviceBaseUrl)}"></i>
+                               data-layer="${escapeAttr(layerName)}">
+                            </i>
                         </div>
 
                         ${legendImgTag}

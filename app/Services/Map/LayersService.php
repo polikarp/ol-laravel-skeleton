@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\DB;
 
 class LayersService
 {
+
+
+    private const BASE_LAYER_KEY = 'base_layers';
+
     /**
      * Build bootstrap payload: groups + services.
      *
@@ -56,13 +60,14 @@ class LayersService
             ->orderBy('group_id')
             ->orderBy('z_index')
             ->orderBy('id')
-            ->get(['id', 'group_id', 'title', 'layer_name', 'base_url', 'layer_type', 'geom_field', 'visible_default', 'z_index', 'queryable', 'options',])
+            ->get(['id', 'group_id', 'title', 'layer_name', 'description', 'base_url', 'layer_type', 'geom_field', 'visible_default', 'z_index', 'queryable', 'options',])
             ->map(function ($l) {
                 return [
                     'id' => (int) $l->id,
                     'group_id' => (int) $l->group_id,
                     'title' => $l->title,
                     'layer_name' => $l->layer_name,
+                    'description' => $l->description,
                     'base_url' => $l->base_url,
                     'type' => $l->layer_type,
                     'geom_field' => $l->geom_field,
@@ -101,5 +106,15 @@ class LayersService
 
         // If it's already an array/object, return as-is
         return $value ?? (object)[];
+    }
+
+    public function getBaseLayers()
+    {
+
+        return DB::table('public.gis_layer_group as glg')
+            ->join('public.gis_layer as gl', 'gl.group_id', '=', 'glg.id')
+            ->where('glg.key', self::BASE_LAYER_KEY)
+            ->select('gl.*')
+            ->get();
     }
 }

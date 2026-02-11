@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\Map\LayersService;
 
 class HomeController extends Controller
 {
@@ -21,7 +22,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(Request $request)
+    public function index(Request $request, LayersService $layersService)
     {
          $request->merge([
             'layer_selected' => 'gibgis:basemap_basic_1',
@@ -35,12 +36,15 @@ class HomeController extends Controller
             ],
         ]);
 
+        $baseLayers = $layersService->getBaseLayers();
+
         return view('home', [
-                'mapConfig' => [
-                    'geoserver' => [
-                        'wms_url' => 'https://download.geoportal.gov.gi/geoserver/wms',
-                    ],
-                ],
+                // 'mapConfig' => [
+                //     'geoserver' => [
+                //         'wms_url' => 'https://download.geoportal.gov.gi/geoserver/wms',
+                //     ],
+                // ],
+                'baseLayers' => $baseLayers,
         ]);
     }
 }

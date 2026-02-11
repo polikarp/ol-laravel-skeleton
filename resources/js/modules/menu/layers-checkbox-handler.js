@@ -47,8 +47,9 @@ export function bindCheckboxToggles(map, { selector = ".layerCheckbox", removeOn
 
     $(document).on("change", selector, function () {
 
-        const layerInfo = readDataFromCheckbox(this);
-        const layerName = layerInfo.layerName;
+        const layerName = $(this).data("layer");
+        const layerInfo = layersInfo.get(layerName);
+        //const layerName = layerInfo.layerName;
         const serviceBaseUrl = layerInfo.serviceBaseUrl;
         const $row = $(this).closest("li");
 
@@ -61,7 +62,7 @@ export function bindCheckboxToggles(map, { selector = ".layerCheckbox", removeOn
 
         if ($(this).is(":checked")) {
             //layersInfo store all layers info
-            layersInfo.set(layerInfo.layerName, layerInfo);
+            //layersInfo.set(layerInfo.layerName, layerInfo);
             addLayerToMap(map, layerName, {});
             $row.find(".wms-legend").first().show();
             $row.find(".layerFilterBtn").removeClass("d-none");
