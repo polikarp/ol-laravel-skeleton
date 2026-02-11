@@ -115,6 +115,7 @@ class LayersService
             ->join('public.gis_layer as gl', 'gl.group_id', '=', 'glg.id')
             ->where('glg.key', self::BASE_LAYER_KEY)
             ->select('gl.*')
+            ->orderBy('gl.id', 'asc')
             ->get();
     }
 }

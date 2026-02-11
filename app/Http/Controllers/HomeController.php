@@ -22,29 +22,17 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(Request $request, LayersService $layersService)
+    public function index(LayersService $layersService)
     {
-         $request->merge([
-            'layer_selected' => 'gibgis:basemap_basic_1',
-            'layer_geoserver' => [
-                'gibgis:basemap_basic_1',
-                'gibgis:aerial2013_v3',
-                'gibgis:aerial2003',
-                'gibgis:basemap_hybrid_2013_v3',
-                'OSM_Base_Layer',
-                'OSM_Base_Gray_Layer',
-            ],
-        ]);
-
         $baseLayers = $layersService->getBaseLayers();
 
+        $layerSelected = $baseLayers->firstWhere('visible_default', true)?->layer_name
+            ?? $baseLayers->first()?->layer_name;
+
         return view('home', [
-                // 'mapConfig' => [
-                //     'geoserver' => [
-                //         'wms_url' => 'https://download.geoportal.gov.gi/geoserver/wms',
-                //     ],
-                // ],
-                'baseLayers' => $baseLayers,
+            'baseLayers'    => $baseLayers,
+            'layerSelected' => $layerSelected,
         ]);
     }
+
 }

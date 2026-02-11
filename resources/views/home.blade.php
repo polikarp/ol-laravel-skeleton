@@ -23,13 +23,12 @@
     </div>
 
     <!-- MENÚS FLOTANTES -->
+
     @php
         use Illuminate\Support\Str;
-
-        $layer_geoserver = request('layer_geoserver', []);
-        $layer_selected  = request('layer_selected');
     @endphp
-    <div id="base-map-menu" class="gis-toolbar-flyout ">
+
+    <div id="base-map-menu" class="gis-toolbar-flyout">
         <div class="d-flex align-items-center justify-content-between mb-2">
             <h6>@lang('messages.base_map')</h6>
             <div class="wms-menu-close">
@@ -38,18 +37,23 @@
         </div>
 
         <div class="row g-2">
-            @foreach ($layer_geoserver as $layer)
-                @php $layerName = Str::after($layer, ':'); @endphp
+            @foreach ($baseLayers as $layer)
+                @php
+                    $layerName = Str::after($layer->layer_name, ':');
+                    $isSelected = $layerSelected === $layer->layer_name;
+                @endphp
+
                 <div class="col-4">
                     <img src="{{ asset('images/baselayers/' . $layerName . '.png') }}"
                         class="img-fluid rounded base-thumb"
-                        data-layer="{{ $layer }}"
-                        title="{{ $layer }}"
-                        @if ($layer_selected === $layer) style="border: 2px solid #0d6efd;" @endif>
+                        data-layer="{{ $layer->layer_name }}"
+                        title="{{ $layer->title ?? $layer->layer_name }}"
+                        @if ($isSelected) style="border: 2px solid #0d6efd;" @endif>
                 </div>
             @endforeach
         </div>
     </div>
+
 
      <div id="wms-menu" class="gis-toolbar-flyout ">
         <div class="d-flex align-items-center justify-content-between mb-2">
