@@ -53,11 +53,6 @@ class LoginController extends Controller
     {
         try {
             $param_connection = env('DB_CONNECTION').':host='.env('DB_HOST').';dbname='.env('DB_DATABASE');
-            $connection = new PDO(
-                $param_connection ,
-                $request->username,
-                $request->password
-            );
             $user = User::where($this->username(), $request->username)->first();
             Auth::login($user);
             Session::put('db_username', $request->username);
@@ -71,7 +66,6 @@ class LoginController extends Controller
             return $this->sendLoginResponse($request);
         } catch (\Exception $e) {
             $errorMessage = str_contains($e->getMessage(), 'SQLSTATE[08006]') ? 'Invalid credentials' : 'Unexpected error, please contact support';
-
             $audit_loging = new AuditLogin();
             $audit_loging->username = $request->username;
             $audit_loging->action = 'Login';

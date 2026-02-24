@@ -29,6 +29,7 @@ class HomeController extends Controller
         $layerSelected = $baseLayers->firstWhere('visible_default', true)?->layer_name
             ?? $baseLayers->first()?->layer_name;
 
+
         return view('home', [
             'baseLayers'    => $baseLayers,
             'layerSelected' => $layerSelected,
